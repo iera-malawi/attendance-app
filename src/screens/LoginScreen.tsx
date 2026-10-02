@@ -46,7 +46,7 @@ export default function LoginScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.logo}>
-            <Ionicons name="finger-print" size={44} color={colors.accent} />
+            <Ionicons name="finger-print" size={44} color={colors.primaryDark} />
           </View>
           <Text style={styles.title}>Staff Attendance</Text>
           <Text style={styles.subtitle}>Sign in with your work account</Text>
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.accentSoft,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,

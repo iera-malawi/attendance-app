@@ -5,9 +5,9 @@ import { colors } from '../theme';
 export default function SplashScreen() {
   return (
     <View style={styles.container}>
-      <Ionicons name="finger-print" size={56} color={colors.accent} />
+      <Ionicons name="finger-print" size={56} color={colors.primary} />
       <Text style={styles.title}>Staff Attendance</Text>
-      <ActivityIndicator size="large" color={colors.accent} style={styles.spinner} />
+      <ActivityIndicator size="large" color={colors.primary} style={styles.spinner} />
     </View>
   );
 }

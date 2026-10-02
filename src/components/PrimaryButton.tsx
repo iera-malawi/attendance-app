@@ -24,7 +24,6 @@ export default function PrimaryButton({
 }: Props) {
   const isDisabled = !!(disabled || loading);
   const solid = variant === 'solid';
-  const fg = solid ? '#FFFFFF' : colors.accent;
 
   return (
     <Pressable
@@ -40,14 +39,18 @@ export default function PrimaryButton({
         isDisabled && styles.disabled,
       ]}
     >
-      {loading ? (
-        <ActivityIndicator color={fg} />
-      ) : (
-        <View style={styles.row}>
-          {icon && <Ionicons name={icon} size={size === 'large' ? 26 : 20} color={fg} />}
-          <Text style={[styles.text, size === 'large' && styles.textLarge, { color: fg }]}>{title}</Text>
-        </View>
-      )}
+      {({ pressed }) => {
+        // #36AEE3 is light: dark text on primary, white on primaryDark (pressed), primaryDark on white.
+        const fg = solid ? (pressed && !isDisabled ? '#FFFFFF' : colors.text) : colors.primaryDark;
+        return loading ? (
+          <ActivityIndicator color={fg} />
+        ) : (
+          <View style={styles.row}>
+            {icon && <Ionicons name={icon} size={size === 'large' ? 26 : 20} color={fg} />}
+            <Text style={[styles.text, size === 'large' && styles.textLarge, { color: fg }]}>{title}</Text>
+          </View>
+        );
+      }}
     </Pressable>
   );
 }
@@ -61,10 +64,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   large: { minHeight: 68 },
-  solid: { backgroundColor: colors.accent },
-  solidPressed: { backgroundColor: colors.accentDark },
-  outline: { backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent },
-  outlinePressed: { backgroundColor: colors.accentSoft },
+  solid: { backgroundColor: colors.primary },
+  solidPressed: { backgroundColor: colors.primaryDark },
+  outline: { backgroundColor: colors.card, borderWidth: 2, borderColor: colors.primary },
+  outlinePressed: { backgroundColor: colors.primaryLight },
   disabled: { opacity: 0.5 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   text: { fontSize: 16, fontWeight: '600' },

@@ -1,8 +1,12 @@
-// Accent matches the admin dashboard (Tailwind indigo-600).
+// Brand colors — keep in sync with admin/src/app/globals.css (@theme).
+export const primary = '#36AEE3';
+export const primaryDark = '#1B75A0';
+export const primaryLight = '#EBF7FC';
+
 export const colors = {
-  accent: '#4F46E5',
-  accentDark: '#4338CA',
-  accentSoft: '#EEF2FF',
+  primary,
+  primaryDark,
+  primaryLight,
   bg: '#F5F5F5',
   card: '#FFFFFF',
   text: '#171717',

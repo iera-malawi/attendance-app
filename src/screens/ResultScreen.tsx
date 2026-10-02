@@ -70,7 +70,7 @@ export default function ResultScreen({ navigation, route }: Props) {
   if (state.phase === 'locating' || state.phase === 'submitting') {
     return (
       <SafeAreaView style={[styles.safe, styles.center]}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.busy}>
           {state.phase === 'locating' ? 'Getting your location...' : 'Recording attendance...'}
         </Text>

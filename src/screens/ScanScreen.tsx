@@ -64,7 +64,7 @@ export default function ScanScreen({ navigation }: Props) {
   if (!permission.granted) {
     return (
       <SafeAreaView style={[styles.safe, styles.center]}>
-        <Ionicons name="camera-outline" size={64} color={colors.accent} />
+        <Ionicons name="camera-outline" size={64} color={colors.primary} />
         <Text style={styles.permTitle}>Camera access needed</Text>
         <Text style={styles.permText}>
           The camera is needed to scan the office QR code.
