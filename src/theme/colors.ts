@@ -1,5 +1,5 @@
 // Brand colors — keep in sync with admin/src/app/globals.css (@theme).
-export const primary = '#7EAB43';
+export const primary = '#36AEE3';
 export const primaryDark = '#1B75A0';
 export const primaryLight = '#EBF7FC';
 
