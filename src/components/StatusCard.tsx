@@ -28,7 +28,19 @@ export default function StatusCard({ today, loading }: Props) {
   let title = 'Not checked in';
   let sub: string | null = null;
 
-  if (today.status === 'checked_in') {
+  if (today.status === 'in_field') {
+    fg = colors.indigo;
+    bg = colors.indigoSoft;
+    icon = 'briefcase-outline';
+    title = `In the field since ${formatServerTime(a?.left_for_field_at)}`;
+    sub = a?.left_for_field_note ?? null;
+  } else if (today.status === 'checked_in' && today.type === 'field') {
+    fg = colors.sky;
+    bg = colors.skySoft;
+    icon = 'location-outline';
+    title = `Field check-in at ${formatServerTime(a?.time_in)}`;
+    sub = a?.field_note_in ?? null;
+  } else if (today.status === 'checked_in') {
     fg = colors.green;
     bg = colors.greenSoft;
     icon = 'checkmark-circle';
@@ -38,8 +50,10 @@ export default function StatusCard({ today, loading }: Props) {
     bg = colors.blueSoft;
     icon = 'log-out-outline';
     title = `Checked out at ${formatServerTime(a?.time_out)}`;
-    sub = `Checked in at ${formatServerTime(a?.time_in)}`;
+    sub = `${a?.type === 'field' ? 'Field check-in' : 'Checked in'} at ${formatServerTime(a?.time_in)}`;
   }
+
+  const review = a?.field_status;
 
   return (
     <View style={[styles.card, { backgroundColor: bg, borderColor: fg }]}>
@@ -47,6 +61,14 @@ export default function StatusCard({ today, loading }: Props) {
       <View style={styles.textWrap}>
         <Text style={[styles.title, { color: fg }]}>{title}</Text>
         {sub && <Text style={styles.sub}>{sub}</Text>}
+        {review === 'pending' && (
+          <Text style={[styles.pill, { color: colors.amber, backgroundColor: colors.amberSoft }]}>Pending approval</Text>
+        )}
+        {review === 'rejected' && (
+          <Text style={[styles.pill, { color: colors.danger, backgroundColor: colors.dangerSoft }]}>
+            Field work rejected by admin
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -66,4 +88,14 @@ const styles = StyleSheet.create({
   textWrap: { flex: 1 },
   title: { fontSize: 19, fontWeight: '700' },
   sub: { fontSize: 14, color: colors.muted, marginTop: 2 },
+  pill: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: 999,
+    overflow: 'hidden',
+    fontSize: 12,
+    fontWeight: '700',
+  },
 });

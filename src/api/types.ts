@@ -7,6 +7,7 @@ export interface User {
   role: Role;
   phone: string | null;
   is_active: boolean;
+  is_field_staff: boolean;
   device_bound: boolean;
 }
 
@@ -16,7 +17,11 @@ export interface LoginResponse {
   user: User;
 }
 
-export type AttendanceStatus = 'not_checked_in' | 'checked_in' | 'checked_out';
+export type AttendanceStatus = 'not_checked_in' | 'checked_in' | 'in_field' | 'checked_out';
+export type AttendanceType = 'office' | 'field';
+export type AttendanceAction = 'check_in' | 'field_check_in' | 'leave_for_field' | 'check_out';
+export type FieldAction = Extract<AttendanceAction, 'field_check_in' | 'leave_for_field'>;
+export type FieldStatus = 'approved' | 'pending' | 'rejected';
 
 export interface Attendance {
   id: number;
@@ -26,12 +31,21 @@ export interface Attendance {
   time_out: string | null;
   method_in: 'qr' | 'button' | null;
   method_out: 'qr' | 'button' | null;
+  platform_in: 'app' | 'web';
+  platform_out: 'app' | 'web' | null;
+  type: AttendanceType;
+  field_note_in: string | null;
+  field_note_out: string | null;
+  left_for_field_at: string | null;
+  left_for_field_note: string | null;
+  field_status: FieldStatus;
   status: AttendanceStatus;
 }
 
 export interface TodayResponse {
   date: string;
   status: AttendanceStatus;
+  type: AttendanceType | null;
   attendance: Attendance | null;
 }
 
@@ -42,11 +56,15 @@ export interface RecordAttendanceBody {
   lat: number;
   lng: number;
   is_mock: boolean;
+  platform: 'app' | 'web';
   qr_token?: string;
+  /** Omitted for the classic flow: the server picks check-in or check-out. */
+  action?: AttendanceAction;
+  note?: string;
 }
 
 export interface RecordAttendanceResponse {
-  action: 'check_in' | 'check_out';
+  action: AttendanceAction;
   distance_m: number;
   attendance: Attendance;
 }

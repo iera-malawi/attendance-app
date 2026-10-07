@@ -6,7 +6,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { isAxiosError } from 'axios';
 import * as Haptics from 'expo-haptics';
 import { recordAttendance } from '../api/attendance';
-import type { ApiErrorBody, RecordAttendanceResponse } from '../api/types';
+import type { ApiErrorBody, AttendanceAction, RecordAttendanceResponse } from '../api/types';
 import PrimaryButton from '../components/PrimaryButton';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { colors } from '../theme';
@@ -15,6 +15,13 @@ import { formatServerTime } from '../utils/format';
 import { getBestPosition, LocationError } from '../utils/location';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Result'>;
+
+const SUCCESS: Record<AttendanceAction, { title: string; time: 'time_in' | 'time_out' | 'left_for_field_at'; message: string }> = {
+  check_in: { title: 'Checked in', time: 'time_in', message: 'Have a great day!' },
+  field_check_in: { title: 'Field check-in', time: 'time_in', message: 'Have a productive day in the field!' },
+  leave_for_field: { title: 'Left for field', time: 'left_for_field_at', message: 'Tap End Field Day when you finish.' },
+  check_out: { title: 'Checked out', time: 'time_out', message: 'See you next time!' },
+};
 
 type State =
   | { phase: 'locating' }
@@ -38,7 +45,8 @@ export default function ResultScreen({ navigation, route }: Props) {
         lat: pos.lat,
         lng: pos.lng,
         is_mock: pos.is_mock,
-        ...(params.method === 'qr' ? { qr_token: params.qrToken } : {}),
+        platform: 'app',
+        ...(params.method === 'qr' ? { qr_token: params.qrToken } : { action: params.action, note: params.note }),
       });
       setState({ phase: 'success', result });
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -80,17 +88,18 @@ export default function ResultScreen({ navigation, route }: Props) {
 
   if (state.phase === 'success') {
     const { action, attendance } = state.result;
-    const checkedIn = action === 'check_in';
-    const time = formatServerTime(checkedIn ? attendance.time_in : attendance.time_out);
+    const copy = SUCCESS[action];
+    const time = formatServerTime(attendance[copy.time]);
+    const pendingApproval = attendance.field_status === 'pending' && action !== 'check_out';
     return (
       <SafeAreaView style={[styles.safe, styles.center]}>
         <View style={[styles.badge, { backgroundColor: colors.greenSoft }]}>
           <Ionicons name="checkmark-circle" size={120} color={colors.green} />
         </View>
         <Text style={styles.title} accessibilityRole="header">
-          {checkedIn ? 'Checked in' : 'Checked out'} at {time}
+          {copy.title} at {time}
         </Text>
-        <Text style={styles.message}>{checkedIn ? 'Have a great day!' : 'See you next time!'}</Text>
+        <Text style={styles.message}>{pendingApproval ? 'Waiting for admin approval.' : copy.message}</Text>
         <View style={styles.buttons}>
           <PrimaryButton title="Done" size="large" onPress={() => navigation.goBack()} />
         </View>

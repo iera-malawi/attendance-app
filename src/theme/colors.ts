@@ -20,4 +20,10 @@ export const colors = {
   greenSoft: '#F0FDF4',
   blue: '#1D4ED8',
   blueSoft: '#EFF6FF',
+  amber: '#B45309',
+  amberSoft: '#FFFBEB',
+  sky: '#0369A1',
+  skySoft: '#F0F9FF',
+  indigo: '#4338CA',
+  indigoSoft: '#EEF2FF',
 };

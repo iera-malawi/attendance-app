@@ -35,6 +35,14 @@ export function getAttendanceErrorMessage(err: unknown): string {
         return 'This QR code is outdated. Ask admin for the new one.';
       case 'already_checked_out':
         return "You've already checked out today.";
+      case 'already_checked_in':
+        return "You've already checked in today.";
+      case 'not_checked_in':
+        return "You haven't checked in yet today.";
+      case 'already_in_field':
+        return "You're already in the field.";
+      case 'field_not_allowed':
+        return "Field work isn't enabled for your account. Ask admin.";
     }
   }
   return getErrorMessage(err);

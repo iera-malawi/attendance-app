@@ -1,3 +1,4 @@
+import type { AttendanceAction } from '../api/types';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +13,7 @@ export type RootStackParamList = {
   Home: undefined;
   Scan: undefined;
   /** Gets the location, submits, and shows the outcome. */
-  Result: { method: 'button' } | { method: 'qr'; qrToken: string };
+  Result: { method: 'button'; action?: AttendanceAction; note?: string } | { method: 'qr'; qrToken: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
