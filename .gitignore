@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+iera-attendance-app-firebase-adminsdk-fbsvc-118f1daa14.json
+

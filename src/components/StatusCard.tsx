@@ -33,13 +33,13 @@ export default function StatusCard({ today, loading }: Props) {
     bg = colors.indigoSoft;
     icon = 'briefcase-outline';
     title = `In the field since ${formatServerTime(a?.left_for_field_at)}`;
-    sub = a?.left_for_field_note ?? null;
+    sub = [a?.field_category, a?.left_for_field_note].filter(Boolean).join(' – ') || null;
   } else if (today.status === 'checked_in' && today.type === 'field') {
     fg = colors.sky;
     bg = colors.skySoft;
     icon = 'location-outline';
     title = `Field check-in at ${formatServerTime(a?.time_in)}`;
-    sub = a?.field_note_in ?? null;
+    sub = [a?.field_category, a?.field_note_in].filter(Boolean).join(' – ') || null;
   } else if (today.status === 'checked_in') {
     fg = colors.green;
     bg = colors.greenSoft;

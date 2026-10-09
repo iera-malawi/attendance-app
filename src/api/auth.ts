@@ -1,12 +1,10 @@
 import { api } from './client';
+import type { DeviceInfo } from '../utils/device';
 import type { LoginResponse, User } from './types';
 
-export async function login(email: string, password: string, deviceId: string) {
-  const { data } = await api.post<LoginResponse>('/login', {
-    email,
-    password,
-    device_id: deviceId,
-  });
+/** The server builds the device fingerprint from `device` plus the request and binds it on first login. */
+export async function login(email: string, password: string, device: DeviceInfo) {
+  const { data } = await api.post<LoginResponse>('/login', { email, password, device });
   return data;
 }
 

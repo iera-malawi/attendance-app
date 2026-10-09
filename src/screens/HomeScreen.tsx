@@ -15,7 +15,7 @@ import { useAuth } from '../context/AuthContext';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { colors } from '../theme';
 import { getErrorMessage } from '../utils/errors';
-import { firstName } from '../utils/format';
+import { firstName, todayHours } from '../utils/format';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -131,6 +131,7 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         <LiveClock />
+        {todayHours(today?.schedule) && <Text style={styles.hours}>{todayHours(today?.schedule)}</Text>}
 
         {error && <ErrorBanner message={error} />}
 
@@ -172,10 +173,10 @@ export default function HomeScreen({ navigation }: Props) {
         title={fieldForm ? FIELD_FORMS[fieldForm].title : ''}
         confirmLabel={fieldForm ? FIELD_FORMS[fieldForm].confirmLabel : ''}
         onCancel={() => setFieldForm(null)}
-        onSubmit={(note) => {
+        onSubmit={({ category, note }) => {
           const action = fieldForm;
           setFieldForm(null);
-          if (action) open('Result', { method: 'button', action, note });
+          if (action) open('Result', { method: 'button', action, fieldCategory: category, note: note || undefined });
         }}
       />
     </SafeAreaView>
@@ -206,4 +207,5 @@ const styles = StyleSheet.create({
   logo: { width: 180, height: 180 * (1208 / 2480) },
   actions: { gap: 12, marginTop: 8 },
   note: { textAlign: 'center', color: colors.muted, fontSize: 14 },
+  hours: { textAlign: 'center', color: colors.muted, fontSize: 15, fontWeight: '600', marginTop: -8 },
 });

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "923874591055",
+    "project_id": "iera-attendance-app",
+    "storage_bucket": "iera-attendance-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:923874591055:android:5c2b67780efb8b4a3c853a",
+        "android_client_info": {
+          "package_name": "com.iera.attendance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUo9w8sTqxlOzcxRO0gahjKvot4mtii_k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

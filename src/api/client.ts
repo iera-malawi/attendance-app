@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from '../config';
+import { getDeviceId } from '../utils/device';
 import { getToken } from '../utils/storage';
 
 export const api = axios.create({
@@ -20,6 +21,8 @@ api.interceptors.request.use(async (config) => {
   if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Tokens only work from the device they were issued to.
+  config.headers['X-Device-Install-Id'] = await getDeviceId();
   return config;
 });
 

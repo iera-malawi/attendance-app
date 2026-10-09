@@ -8,6 +8,9 @@ export interface User {
   phone: string | null;
   is_active: boolean;
   is_field_staff: boolean;
+  schedule_confirmed: boolean;
+  notify_check_in: boolean;
+  notify_check_out: boolean;
   device_bound: boolean;
 }
 
@@ -34,6 +37,7 @@ export interface Attendance {
   platform_in: 'app' | 'web';
   platform_out: 'app' | 'web' | null;
   type: AttendanceType;
+  field_category: string | null;
   field_note_in: string | null;
   field_note_out: string | null;
   left_for_field_at: string | null;
@@ -47,6 +51,41 @@ export interface TodayResponse {
   status: AttendanceStatus;
   type: AttendanceType | null;
   attendance: Attendance | null;
+  schedule: DaySchedule;
+}
+
+/** One weekday (0 = Sunday … 6 = Saturday). */
+export interface WorkDay {
+  weekday: number;
+  day: string;
+  is_working_day: boolean;
+  start_time: string; // HH:MM
+  end_time: string;
+}
+
+/** Hours for one date; not a working day on days off and holidays. */
+export interface DaySchedule {
+  date: string;
+  is_working_day: boolean;
+  start_time: string | null;
+  end_time: string | null;
+  holiday: string | null;
+}
+
+export interface ScheduleResponse {
+  week: WorkDay[];
+  today: DaySchedule;
+  late_grace_minutes: number;
+  holidays_upcoming: { id: number; date: string; name: string }[];
+  confirmed: boolean;
+  notify_check_in: boolean;
+  notify_check_out: boolean;
+}
+
+export interface FieldCategory {
+  id: number;
+  name: string;
+  requires_note: boolean;
 }
 
 export type AttendanceMethod = 'qr' | 'button';
@@ -60,6 +99,7 @@ export interface RecordAttendanceBody {
   qr_token?: string;
   /** Omitted for the classic flow: the server picks check-in or check-out. */
   action?: AttendanceAction;
+  field_category?: string;
   note?: string;
 }
 

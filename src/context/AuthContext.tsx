@@ -2,7 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import * as authApi from '../api/auth';
 import { setUnauthorizedHandler } from '../api/client';
 import type { User } from '../api/types';
-import { getDeviceId } from '../utils/device';
+import { getDeviceInfo } from '../utils/device';
+import { registerForPush, unregisterPush } from '../utils/push';
 import { clearAuth, getStoredUser, getToken, setStoredUser, setToken } from '../utils/storage';
 
 export const ADMIN_BLOCKED_MESSAGE = 'Please use the admin dashboard.';
@@ -13,6 +14,8 @@ interface AuthState {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Replaces the signed-in user, e.g. after confirming the schedule. */
+  updateUser: (user: User) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -47,6 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .then((fresh) => {
               setUser(fresh);
               void setStoredUser(fresh);
+              // Push tokens can change; re-save it quietly if notifications are already allowed.
+              if (fresh.schedule_confirmed) void registerForPush();
             })
             .catch(() => {});
         } else if (storedToken || storedUser) {
@@ -59,8 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const deviceId = await getDeviceId();
-    const res = await authApi.login(email.trim(), password, deviceId);
+    const res = await authApi.login(email.trim(), password, await getDeviceInfo());
 
     if (res.user.role !== 'staff') {
       // Revoke the admin token we just received; it is never used in the app.
@@ -75,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    await unregisterPush();
     try {
       await authApi.logout();
     } catch {
@@ -83,9 +88,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await reset();
   }, [reset]);
 
+  const updateUser = useCallback(async (fresh: User) => {
+    setUser(fresh);
+    await setStoredUser(fresh);
+  }, []);
+
   const value = useMemo(
-    () => ({ token, user, loading, signIn, signOut }),
-    [token, user, loading, signIn, signOut],
+    () => ({ token, user, loading, signIn, signOut, updateUser }),
+    [token, user, loading, signIn, signOut, updateUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

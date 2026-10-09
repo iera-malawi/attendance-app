@@ -26,4 +26,22 @@ export function formatServerTime(iso: string | null | undefined): string {
   return Number.isNaN(d.getTime()) ? '—' : formatTime(d);
 }
 
-export const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
+/** Schedule time "07:30" → "7:30 AM". */
+export function formatHm(hm: string | null | undefined): string {
+  const m = hm?.match(/^(\d{1,2}):(\d{2})/);
+  if (!m) return '—';
+  const h = Number(m[1]);
+  return `${h % 12 || 12}:${m[2]} ${h < 12 ? 'AM' : 'PM'}`;
+}
+
+/** "Today: 7:30 AM – 3:30 PM", "Today: Day off" or "Today: Christmas Day (holiday)". */
+export function todayHours(
+  s: { is_working_day: boolean; start_time: string | null; end_time: string | null; holiday: string | null } | null | undefined,
+): string | null {
+  if (!s) return null;
+  if (s.holiday) return `Today: ${s.holiday} (holiday)`;
+  if (!s.is_working_day) return 'Today: Day off';
+  return `Today: ${formatHm(s.start_time)} – ${formatHm(s.end_time)}`;
+}
+
+export const firstName =(name: string) => name.trim().split(/\s+/)[0] ?? name;

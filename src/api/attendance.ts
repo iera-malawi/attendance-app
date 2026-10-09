@@ -6,7 +6,7 @@ export async function getToday() {
   return data;
 }
 
-/** First call of the day checks in, the second checks out; the server decides which. */
+/** Without an action the server decides: first call checks in, the second checks out. */
 export async function recordAttendance(body: RecordAttendanceBody) {
   const { data } = await api.post<RecordAttendanceResponse>('/attendance', body);
   return data;

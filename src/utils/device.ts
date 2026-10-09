@@ -1,6 +1,47 @@
 import * as Application from 'expo-application';
+import * as Device from 'expo-device';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+
+/** What the app reports at login; the server builds the fingerprint from this plus the request itself. */
+export interface DeviceInfo {
+  platform: 'app';
+  install_id: string;
+  device_name: string | null;
+  device_type: string | null;
+  brand: string | null;
+  model: string | null;
+  os_name: string | null;
+  os_version: string | null;
+  app_version: string | null;
+  memory_gb: number | null;
+}
+
+const DEVICE_TYPES: Record<number, string> = {
+  [Device.DeviceType.PHONE]: 'phone',
+  [Device.DeviceType.TABLET]: 'tablet',
+  [Device.DeviceType.DESKTOP]: 'desktop',
+  [Device.DeviceType.TV]: 'tv',
+};
+
+export async function getDeviceInfo(): Promise<DeviceInfo> {
+  const version = Application.nativeApplicationVersion;
+  const build = Application.nativeBuildVersion;
+
+  return {
+    platform: 'app',
+    install_id: await getDeviceId(),
+    device_name: Device.deviceName,
+    device_type: Device.deviceType != null ? (DEVICE_TYPES[Device.deviceType] ?? null) : null,
+    brand: Device.brand ?? Device.manufacturer,
+    // iOS reports e.g. "iPhone 15" as modelName; Android the marketing or model code.
+    model: Device.modelName ?? Device.modelId ?? null,
+    os_name: Device.osName,
+    os_version: Device.osVersion,
+    app_version: version ? (build ? `${version} (${build})` : version) : null,
+    memory_gb: Device.totalMemory ? Math.round((Device.totalMemory / 1024 ** 3) * 10) / 10 : null,
+  };
+}
 
 const FALLBACK_KEY = 'device_id_fallback';
 

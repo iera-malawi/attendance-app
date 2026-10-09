@@ -41,6 +41,8 @@ export function getAttendanceErrorMessage(err: unknown): string {
         return "You haven't checked in yet today.";
       case 'already_in_field':
         return "You're already in the field.";
+      case 'schedule_not_confirmed':
+        return 'Please confirm your work schedule first.';
       case 'field_not_allowed':
         return "Field work isn't enabled for your account. Ask admin.";
     }

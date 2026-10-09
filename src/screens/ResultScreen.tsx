@@ -46,7 +46,7 @@ export default function ResultScreen({ navigation, route }: Props) {
         lng: pos.lng,
         is_mock: pos.is_mock,
         platform: 'app',
-        ...(params.method === 'qr' ? { qr_token: params.qrToken } : { action: params.action, note: params.note }),
+        ...(params.method === 'qr' ? { qr_token: params.qrToken } : { action: params.action, field_category: params.fieldCategory, note: params.note }),
       });
       setState({ phase: 'success', result });
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
