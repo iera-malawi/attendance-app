@@ -24,6 +24,9 @@ const DEVICE_TYPES: Record<number, string> = {
   [Device.DeviceType.TV]: 'tv',
 };
 
+/** Trims to the server's max length for that field; empty becomes null. */
+const clip = (value: string | null | undefined, max: number) => value?.trim().slice(0, max) || null;
+
 export async function getDeviceInfo(): Promise<DeviceInfo> {
   const version = Application.nativeApplicationVersion;
   const build = Application.nativeBuildVersion;
@@ -31,14 +34,15 @@ export async function getDeviceInfo(): Promise<DeviceInfo> {
   return {
     platform: 'app',
     install_id: await getDeviceId(),
-    device_name: Device.deviceName,
+    device_name: clip(Device.deviceName, 255),
     device_type: Device.deviceType != null ? (DEVICE_TYPES[Device.deviceType] ?? null) : null,
-    brand: Device.brand ?? Device.manufacturer,
+    brand: clip(Device.brand ?? Device.manufacturer, 100),
     // iOS reports e.g. "iPhone 15" as modelName; Android the marketing or model code.
-    model: Device.modelName ?? Device.modelId ?? null,
-    os_name: Device.osName,
-    os_version: Device.osVersion,
-    app_version: version ? (build ? `${version} (${build})` : version) : null,
+    model: clip(Device.modelName ?? Device.modelId, 100),
+    // Some Android phones report osName as a long build fingerprint instead of "Android".
+    os_name: Platform.OS === 'android' ? 'Android' : clip(Device.osName, 50),
+    os_version: clip(Device.osVersion, 50),
+    app_version: clip(version ? (build ? `${version} (${build})` : version) : null, 50),
     memory_gb: Device.totalMemory ? Math.round((Device.totalMemory / 1024 ** 3) * 10) / 10 : null,
   };
 }
