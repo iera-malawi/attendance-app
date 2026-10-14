@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'staff';
+export type Role = 'super_admin' | 'admin' | 'staff';
 
 export interface User {
   id: number;
@@ -6,6 +6,8 @@ export interface User {
   email: string;
   role: Role;
   phone: string | null;
+  /** Signed in with an emailed temporary password; must set their own before anything else. */
+  must_change_password: boolean;
   is_active: boolean;
   is_field_staff: boolean;
   schedule_confirmed: boolean;

@@ -40,5 +40,6 @@ yarn-error.*
 /ios
 /android
 
-iera-attendance-app-firebase-adminsdk-fbsvc-118f1daa14.json
+# Firebase Admin SDK service-account keys (server-only secrets)
+*-firebase-adminsdk-*.json
 

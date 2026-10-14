@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "iera attendance",
-    "slug": "mobile",
+    "slug": "iera-attendance",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -60,7 +60,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "6d9df576-2401-4086-a973-884ab5042f86"
+        "projectId": "4135e97b-3ff9-4d93-a3ff-bf3a90313fb2"
       }
     },
     "owner": "cassimmbalaka"

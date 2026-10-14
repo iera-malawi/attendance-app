@@ -4,6 +4,7 @@ import { createNavigationContainerRef, NavigationContainer } from '@react-naviga
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { AttendanceAction } from '../api/types';
 import { useAuth } from '../context/AuthContext';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ResultScreen from '../screens/ResultScreen';
@@ -13,6 +14,8 @@ import SplashScreen from '../screens/SplashScreen';
 
 export type RootStackParamList = {
   Login: undefined;
+  /** Mandatory while signed in with the emailed temporary password. */
+  ChangePassword: undefined;
   /** Mandatory until the staff member confirms the weekly schedule. */
   Schedule: undefined;
   Home: undefined;
@@ -29,15 +32,16 @@ const navigationRef = createNavigationContainerRef<RootStackParamList>();
 export default function RootNavigator() {
   const { token, user, loading } = useAuth();
   // Older stored profiles have no flag yet; /me refreshes it in the background.
+  const needsPassword = user?.must_change_password === true;
   const needsSchedule = user?.schedule_confirmed === false;
 
   // Tapping a reminder opens Home (a cold start already lands there).
   useEffect(() => {
     const sub = Notifications.addNotificationResponseReceivedListener(() => {
-      if (navigationRef.isReady() && token && !needsSchedule) navigationRef.navigate('Home');
+      if (navigationRef.isReady() && token && !needsPassword && !needsSchedule) navigationRef.navigate('Home');
     });
     return () => sub.remove();
-  }, [token, needsSchedule]);
+  }, [token, needsPassword, needsSchedule]);
 
   if (loading) return <SplashScreen />;
 
@@ -47,6 +51,8 @@ export default function RootNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!token ? (
           <Stack.Screen name="Login" component={LoginScreen} options={{ animationTypeForReplace: 'pop' }} />
+        ) : needsPassword ? (
+          <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         ) : needsSchedule ? (
           <Stack.Screen name="Schedule" component={ScheduleScreen} />
         ) : (
