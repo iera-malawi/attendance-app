@@ -1,5 +1,4 @@
 import * as Location from 'expo-location';
-import { Platform } from 'react-native';
 
 export interface Position {
   lat: number;
@@ -36,14 +35,12 @@ async function ensurePermission() {
 
 async function ensureServicesOn() {
   if (await Location.hasServicesEnabledAsync()) return;
-  if (Platform.OS === 'android') {
-    // Shows the system "Turn on location" dialog; throws if the user declines.
-    try {
-      await Location.enableNetworkProviderAsync();
-      if (await Location.hasServicesEnabledAsync()) return;
-    } catch {
-      // Fall through to the error below.
-    }
+  // Shows the system "Turn on location" dialog; throws if the user declines.
+  try {
+    await Location.enableNetworkProviderAsync();
+    if (await Location.hasServicesEnabledAsync()) return;
+  } catch {
+    // Fall through to the error below.
   }
   throw new LocationError('services_off');
 }

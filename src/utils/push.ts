@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { registerPushToken, unregisterPushToken } from '../api/schedule';
@@ -19,13 +18,11 @@ const CHANNEL_ID = 'reminders';
 let registeredToken: string | null = null;
 
 async function ensureChannel() {
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
-      name: 'Check-in reminders',
-      importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-    });
-  }
+  await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+    name: 'Check-in reminders',
+    importance: Notifications.AndroidImportance.HIGH,
+    vibrationPattern: [0, 250, 250, 250],
+  });
 }
 
 export async function notificationsAllowed(): Promise<boolean> {

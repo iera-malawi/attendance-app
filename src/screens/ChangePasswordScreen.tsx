@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,16 +10,25 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as authApi from '../api/auth';
 import ErrorBanner from '../components/ErrorBanner';
 import PrimaryButton from '../components/PrimaryButton';
 import { useAuth } from '../context/AuthContext';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import { colors } from '../theme';
 import { getErrorMessage } from '../utils/errors';
 
-/** Mandatory after signing in with the temporary password from the welcome email. */
-export default function ChangePasswordScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, 'ChangePassword'>;
+
+/**
+ * Mandatory after signing in with the temporary password from the welcome email;
+ * otherwise opened from Home to change the password voluntarily.
+ */
+export default function ChangePasswordScreen({ navigation }: Props) {
   const { user, updateUser, signOut } = useAuth();
+  // Fixed at mount: the flag clears on success, and the navigator swaps this screen out.
+  const [forced] = useState(() => user?.must_change_password === true);
   const [current, setCurrent] = useState('');
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
@@ -41,8 +49,12 @@ export default function ChangePasswordScreen() {
     setError(null);
     setLoading(true);
     try {
-      // The navigator moves on (schedule or Home) once the flag clears.
+      // When forced, the navigator moves on (schedule or Home) once the flag clears.
       await updateUser(await authApi.changePassword(current, password, confirmation));
+      if (!forced) {
+        Alert.alert('Password changed', 'Use your new password next time you log in.');
+        navigation.goBack();
+      }
     } catch (err) {
       setError(getErrorMessage(err));
       setLoading(false);
@@ -60,26 +72,41 @@ export default function ChangePasswordScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {!forced && (
+        <View style={styles.header}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={({ pressed }) => [styles.back, pressed && styles.backPressed]}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            hitSlop={8}
+            disabled={loading}
+          >
+            <Ionicons name="arrow-back" size={26} color={colors.text} />
+          </Pressable>
+        </View>
+      )}
+      <View style={styles.flex}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.logo}>
             <Ionicons name="key-outline" size={40} color={colors.primaryDark} />
           </View>
-          <Text style={styles.title}>Set your password</Text>
+          <Text style={styles.title}>{forced ? 'Set your password' : 'Change password'}</Text>
           <Text style={styles.subtitle}>
-            {user ? `Welcome, ${user.name}. ` : ''}Choose your own password to replace the temporary one we emailed you.
+            {forced
+              ? `${user ? `Welcome, ${user.name}. ` : ''}Choose your own password to replace the temporary one we emailed you.`
+              : 'Enter your current password, then choose a new one. Other devices will be signed out.'}
           </Text>
 
           {error && <ErrorBanner message={error} />}
 
-          <Text style={styles.label}>Temporary password</Text>
+          <Text style={styles.label}>{forced ? 'Temporary password' : 'Current password'}</Text>
           <TextInput
             {...shared}
             value={current}
             onChangeText={setCurrent}
-            placeholder="From the email"
+            placeholder={forced ? 'From the email' : 'Your current password'}
             autoComplete="password"
-            textContentType="password"
             returnKeyType="next"
             onSubmitEditing={() => newRef.current?.focus()}
           />
@@ -92,7 +119,6 @@ export default function ChangePasswordScreen() {
             onChangeText={setPassword}
             placeholder="At least 8 characters"
             autoComplete="new-password"
-            textContentType="newPassword"
             returnKeyType="next"
             onSubmitEditing={() => confirmRef.current?.focus()}
           />
@@ -105,7 +131,6 @@ export default function ChangePasswordScreen() {
             onChangeText={setConfirmation}
             placeholder="Type it again"
             autoComplete="new-password"
-            textContentType="newPassword"
             returnKeyType="go"
             onSubmitEditing={handleSubmit}
           />
@@ -121,14 +146,21 @@ export default function ChangePasswordScreen() {
           </Pressable>
 
           <View style={styles.submit}>
-            <PrimaryButton title="Set password" onPress={handleSubmit} loading={loading} disabled={!canSubmit} />
+            <PrimaryButton
+              title={forced ? 'Set password' : 'Change password'}
+              onPress={handleSubmit}
+              loading={loading}
+              disabled={!canSubmit}
+            />
           </View>
 
-          <Pressable style={styles.signOut} onPress={() => void signOut()} accessibilityRole="button" hitSlop={8}>
-            <Text style={styles.signOutText}>Sign out</Text>
-          </Pressable>
+          {forced && (
+            <Pressable style={styles.signOut} onPress={() => void signOut()} accessibilityRole="button" hitSlop={8}>
+              <Text style={styles.signOutText}>Sign out</Text>
+            </Pressable>
+          )}
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -136,6 +168,9 @@ export default function ChangePasswordScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
   flex: { flex: 1 },
+  header: { paddingHorizontal: 12, paddingTop: 4 },
+  back: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  backPressed: { backgroundColor: colors.border },
   container: { flexGrow: 1, justifyContent: 'center', padding: 20, gap: 8 },
   logo: {
     alignSelf: 'center',

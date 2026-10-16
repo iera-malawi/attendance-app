@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -43,10 +42,15 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={styles.flex}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <View style={styles.logo}>
-            <Ionicons name="finger-print" size={44} color={colors.primaryDark} />
+          <View style={styles.logoWrap}>
+            <Image
+              source={require('../../assets/ierawhite.png')}
+              style={styles.logo}
+              resizeMode="contain"
+              accessibilityLabel="iERA logo"
+            />
           </View>
           <Text style={styles.title}>Staff Attendance</Text>
           <Text style={styles.subtitle}>Sign in with your work account</Text>
@@ -64,7 +68,6 @@ export default function LoginScreen() {
             autoCorrect={false}
             autoComplete="email"
             keyboardType="email-address"
-            textContentType="username"
             returnKeyType="next"
             onSubmitEditing={() => passwordRef.current?.focus()}
             editable={!loading}
@@ -83,7 +86,6 @@ export default function LoginScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               autoComplete="password"
-              textContentType="password"
               returnKeyType="go"
               onSubmitEditing={handleLogin}
               editable={!loading}
@@ -103,7 +105,7 @@ export default function LoginScreen() {
             <PrimaryButton title="Login" onPress={handleLogin} loading={loading} disabled={!canSubmit} />
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -112,16 +114,16 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
   flex: { flex: 1 },
   container: { flexGrow: 1, justifyContent: 'center', padding: 20, gap: 8 },
-  logo: {
-    alignSelf: 'center',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primaryLight,
+  // White logo needs a dark backdrop, same as Home.
+  logoWrap: {
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: colors.primaryDark,
+    borderRadius: 16,
+    paddingVertical: 20,
     marginBottom: 8,
   },
+  // Source image is 2480x1208.
+  logo: { width: 180, height: 180 * (1208 / 2480) },
   title: { fontSize: 26, fontWeight: '700', color: colors.text, textAlign: 'center' },
   subtitle: { fontSize: 15, color: colors.muted, textAlign: 'center', marginBottom: 16 },
   label: { fontSize: 15, fontWeight: '600', color: colors.text, marginTop: 8 },

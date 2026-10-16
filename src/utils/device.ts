@@ -1,7 +1,6 @@
 import * as Application from 'expo-application';
 import * as Device from 'expo-device';
 import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
 
 /** What the app reports at login; the server builds the fingerprint from this plus the request itself. */
 export interface DeviceInfo {
@@ -37,10 +36,10 @@ export async function getDeviceInfo(): Promise<DeviceInfo> {
     device_name: clip(Device.deviceName, 255),
     device_type: Device.deviceType != null ? (DEVICE_TYPES[Device.deviceType] ?? null) : null,
     brand: clip(Device.brand ?? Device.manufacturer, 100),
-    // iOS reports e.g. "iPhone 15" as modelName; Android the marketing or model code.
+    // The marketing name or model code.
     model: clip(Device.modelName ?? Device.modelId, 100),
-    // Some Android phones report osName as a long build fingerprint instead of "Android".
-    os_name: Platform.OS === 'android' ? 'Android' : clip(Device.osName, 50),
+    // Some phones report osName as a long build fingerprint instead of "Android".
+    os_name: 'Android',
     os_version: clip(Device.osVersion, 50),
     app_version: clip(version ? (build ? `${version} (${build})` : version) : null, 50),
     memory_gb: Device.totalMemory ? Math.round((Device.totalMemory / 1024 ** 3) * 10) / 10 : null,
@@ -66,8 +65,7 @@ export async function getDeviceId(): Promise<string> {
 
   let id: string | null = null;
   try {
-    if (Platform.OS === 'android') id = Application.getAndroidId();
-    else if (Platform.OS === 'ios') id = await Application.getIosIdForVendorAsync();
+    id = Application.getAndroidId();
   } catch {
     id = null;
   }

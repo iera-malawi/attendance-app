@@ -105,6 +105,15 @@ export default function HomeScreen({ navigation }: Props) {
           Hello, {user ? firstName(user.name) : ''}
         </Text>
         <Pressable
+          onPress={() => navigation.navigate('ChangePassword')}
+          style={({ pressed }) => [styles.logout, pressed && styles.logoutPressed]}
+          accessibilityRole="button"
+          accessibilityLabel="Change password"
+          hitSlop={8}
+        >
+          <Ionicons name="key-outline" size={24} color={colors.text} />
+        </Pressable>
+        <Pressable
           onPress={confirmLogout}
           style={({ pressed }) => [styles.logout, pressed && styles.logoutPressed]}
           accessibilityRole="button"
@@ -118,7 +127,7 @@ export default function HomeScreen({ navigation }: Props) {
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} tintColor={colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
         }
       >
         <View style={styles.logoWrap}>

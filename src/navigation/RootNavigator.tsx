@@ -14,7 +14,7 @@ import SplashScreen from '../screens/SplashScreen';
 
 export type RootStackParamList = {
   Login: undefined;
-  /** Mandatory while signed in with the emailed temporary password. */
+  /** Mandatory while signed in with the emailed temporary password; otherwise opened from Home. */
   ChangePassword: undefined;
   /** Mandatory until the staff member confirms the weekly schedule. */
   Schedule: undefined;
@@ -60,6 +60,7 @@ export default function RootNavigator() {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Scan" component={ScanScreen} options={{ animation: 'slide_from_bottom' }} />
             <Stack.Screen name="Result" component={ResultScreen} options={{ gestureEnabled: false, animation: 'fade' }} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
           </>
         )}
       </Stack.Navigator>

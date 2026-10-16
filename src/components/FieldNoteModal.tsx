@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -58,7 +56,7 @@ export default function FieldNoteModal({ visible, title, confirmLabel, onSubmit,
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
-      <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={styles.root}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel="Close" />
         <View style={styles.sheet} accessibilityViewIsModal>
           <Text style={styles.title} accessibilityRole="header">
@@ -121,7 +119,7 @@ export default function FieldNoteModal({ visible, title, confirmLabel, onSubmit,
             <PrimaryButton title="Cancel" variant="outline" onPress={close} />
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }
