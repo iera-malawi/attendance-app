@@ -6,7 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "platforms": ["android"],
+    "platforms": [
+      "android"
+    ],
     "android": {
       "package": "com.iera.attendance",
       "googleServicesFile": "./google-services.json",
@@ -19,7 +21,10 @@
         "android.permission.CAMERA",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
-      ]
+      ],
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -57,6 +62,9 @@
         "projectId": "4135e97b-3ff9-4d93-a3ff-bf3a90313fb2"
       }
     },
-    "owner": "cassimmbalaka"
+    "owner": "cassimmbalaka",
+    "updates": {
+      "url": "https://u.expo.dev/4135e97b-3ff9-4d93-a3ff-bf3a90313fb2"
+    }
   }
 }
