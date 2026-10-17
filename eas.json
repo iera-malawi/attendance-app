@@ -17,11 +17,20 @@
       "android": {
         "buildType": "apk"
       },
-      "channel": "preview"
+      "channel": "preview",
+      "env": {
+        "OBFUSCATION_PROFILE": "structure"
+      }
     },
     "production": {
-      "autoIncrement": true,
-      "channel": "production"
+      "autoIncrement": false,
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "OBFUSCATION_PROFILE": "structure"
+      }
     }
   },
   "submit": {

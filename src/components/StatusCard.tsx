@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import type { TodayResponse } from '../api/types';
 import { colors } from '../theme';
 import { formatServerTime } from '../utils/format';

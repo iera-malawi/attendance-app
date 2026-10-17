@@ -12,23 +12,32 @@
  *  - dev runs (options.dev) and web;
  *  - anything under node_modules (React Native, Expo, libraries): public code,
  *    huge, and all cost/risk for no secrecy;
- *  - modules containing Reanimated worklets: a worklet's source is captured as
- *    a string by a Babel plugin and evaluated on another thread, so rewriting
- *    the surrounding code could desynchronise it from its captured closure.
+ *  - modules containing Reanimated-style worklets (guarded by the
+ *    __workletHash / __initData markers below): a worklet's source is captured
+ *    as a string by a Babel plugin and evaluated on another thread, so
+ *    rewriting the surrounding code could desynchronise it from its captured
+ *    closure. (This app has no worklets today; the guard is kept as a safety
+ *    net if such a library is added later.)
  * SKIP_OBFUSCATION=1 disables it for a build (e.g. to rule it out when
  * chasing a crash).
  *
  * Deliberately NOT enabled: selfDefending / debugProtection (rely on the
  * code's own formatting/toString; can hang a minified Hermes bundle),
- * renameProperties (expo-router reads `default` / `unstable_settings` /
- * `ErrorBoundary` exports), eval-based decoding (Hermes has no runtime eval).
+ * renameProperties (would rename export names that libraries read by string),
+ * eval-based decoding (Hermes has no runtime eval).
  * `ignoreImports` keeps `require("x")` and `import("x")` literal so Metro can still
  * collect each module's dependencies.
  */
-const upstream = require('@expo/metro-config/build/babel-transformer');
-const generate = require('@babel/generator').default;
-const parser = require('@babel/parser');
-const traverse = require('@babel/traverse').default;
+// @expo/metro-config is nested under expo/ (not hoisted), so resolve it - and
+// the Babel packages, to get the same copies that produced the AST - from there.
+const expoDir = require.resolve('expo/package.json');
+const metroConfigDir = require.resolve('@expo/metro-config/package.json', { paths: [expoDir] });
+const fromMetroConfig = (id) => require(require.resolve(id, { paths: [metroConfigDir] }));
+
+const upstream = fromMetroConfig('@expo/metro-config/babel-transformer');
+const generate = fromMetroConfig('@babel/generator').default;
+const parser = fromMetroConfig('@babel/parser');
+const traverse = fromMetroConfig('@babel/traverse').default;
 const JavaScriptObfuscator = require('javascript-obfuscator');
 
 // Deterministic per file: same input -> same output, so rebuilds and OTA
@@ -141,17 +150,15 @@ function restoreLocs(ast, bySpecifier) {
 }
 
 /**
- * OBFUSCATION_PROFILE picks how much is applied (default: heavy - chosen
- * deliberately, accepting the startup cost below; use `structure` for +0.23 s).
+ * OBFUSCATION_PROFILE picks how much is applied. This project builds with
+ * `structure` (set in eas.json) to keep cold start low; `heavy` is the
+ * built-in default if the variable is unset.
  * Startup cost scales with how much runs at load: every obfuscated module
- * rebuilds its own string table when it loads. The numbers below predate
- * EXPO_ROUTER_IMPORT_MODE=lazy (every route used to load at launch
- * regardless of whether it was ever opened that session - see "Startup
- * performance" in CLAUDE.md) and inlineRequires (metro.config.js), both of
- * which cut how many modules - obfuscated or not - actually run before the
- * first screen is interactive, so real-world cost today is likely lower
- * than this. Cold-start medians measured on the team's test phone before
- * either of those (plain build: 1.22 s):
+ * rebuilds its own string table when it loads. inlineRequires (metro.config.js)
+ * cuts how many modules - obfuscated or not - actually run before the first
+ * screen is interactive, so real-world cost is likely lower than the numbers
+ * below. These are cold-start medians from an earlier project's test phone and
+ * are indicative only (its plain build: 1.22 s):
  *   structure - control-flow flattening + dead code + base64 string table,
  *               no splitting/rc4:            1.45 s  (+0.23 s)
  *   strings   - full string protection (rc4, splitting, chained wrappers)

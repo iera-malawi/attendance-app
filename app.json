@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "iera attendance",
-    "slug": "iera-attendance",
+    "name": "CheckIn",
+    "slug": "iera-checkin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,11 +13,14 @@
       "package": "com.iera.attendance",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/favicon.png"
+        "backgroundColor": "#36AEE3",
+        "foregroundImage": "./assets/adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.CAMERA",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
@@ -50,21 +53,34 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/favicon.png",
+          "image": "./assets/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#FFFFFF"
+          "backgroundColor": "#36AEE3"
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24,
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
+        }
+      ],
+      "./plugins/withAndroidSizeTrim"
     ],
     "extra": {
       "eas": {
-        "projectId": "4135e97b-3ff9-4d93-a3ff-bf3a90313fb2"
+        "projectId": "1e532c4c-75ec-4820-86b3-34effb29e17b"
       }
     },
-    "owner": "cassimmbalaka",
+    "owner": "iera",
     "updates": {
-      "url": "https://u.expo.dev/4135e97b-3ff9-4d93-a3ff-bf3a90313fb2"
-    }
+      "checkAutomatically": "ON_ERROR_RECOVERY",
+      "url": "https://u.expo.dev/1e532c4c-75ec-4820-86b3-34effb29e17b"
+    },
+    "ios": {}
   }
 }
